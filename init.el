@@ -24,7 +24,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-	(xterm-color evil-magit magit org-bullets evil-org use-package evil auto-compile atom-one-dark-theme))))
+	(flycheck xterm-color evil-magit magit org-bullets evil-org use-package evil auto-compile atom-one-dark-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
