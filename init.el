@@ -1,32 +1,21 @@
-;; Configure package.el to include MELPA.
-(require 'package)
-(add-to-list 'package-archives
-         '("melpa-stable" . "http://stable.melpa.org/packages/"))
-(add-to-list 'package-archives
-         '("melpa" . "http://melpa.org/packages/"))
-(package-initialize)
+;; straight.el requires these two sadly
+(defvar native-comp-deferred-compilation-deny-list nil)
+(setq package-enable-at-startup nil)
 
-;; Ensure that packages are intitialized
-;; If use-package isn't already installed, it's extremely likely that this is a
-;; fresh isntallation? So we'll want to update the package repository and
-;; install use-package before loading the literate configuration
-(when (not (package-installed-p 'use-package))
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; This a substitute for package.el, instead of downloading tar files it will grab the source from github
+;; and compile it. Much nicer imo. Plays well with ensure-package which is fantastic.
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-
-;;Load in the org mode file emacs source code, allows us to have
+;; Load in the org file where we've described our configuration as an .el file
 (org-babel-load-file "~/.emacs.d/configuration.org")
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(rainbow-delimiters racket-mode evil-magit magit evil-org evil org-bullets use-package auto-compile)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
