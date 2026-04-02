@@ -1,21 +1,240 @@
-;; straight.el requires these two sadly
-(defvar native-comp-deferred-compilation-deny-list nil)
-(setq package-enable-at-startup nil)
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Packages
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(require `package)
+(add-to-list `package-archives `("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
 
-;; This a substitute for package.el, instead of downloading tar files it will grab the source from github
-;; and compile it. Much nicer imo. Plays well with ensure-package which is fantastic.
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+;; -- Fetch packages
+(unless package-archive-contents
+  (package-refresh-contents))
 
-;; Load in the org file where we've described our configuration as an .el file
-(org-babel-load-file "~/.emacs.d/configuration.org")
+;; -- Ensure packages exist by default
+(require `use-package)
+(setq use-package-always-ensure t)
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Source Control
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(use-package magit)
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Auto-Complete & Search
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(use-package vertico
+  :init
+  (vertico-mode))
+
+(use-package corfu
+  :init
+  (global-corfu-mode)
+  :config
+  (setq corfu-auto t))
+
+(use-package consult)
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Window Management
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(use-package ace-window
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Project Management
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(use-package projectile
+  :config
+  (projectile-mode +1)
+  (setq projectile-project-search-path `("mnt/w/Nighthawk")))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Directory Traversal
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(use-package treemacs
+  :config
+  (treemacs-git-mode -1))
+
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Vim Emulation
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(use-package evil
+	     :init
+	     :config
+         (define-key evil-normal-state-map (kbd "<SPC> m") `magit-status)
+         (define-key evil-normal-state-map (kbd "SPC w") 'ace-window)
+         (define-key evil-normal-state-map (kbd "SPC SPC") 'projectile-find-file)
+         (define-key evil-normal-state-map (kbd "SPC /") 'consult-ripgrep)
+	     (evil-mode 1))
+
+(use-package treemacs-evil
+  :after (treemacs evil))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Appearance
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; -- Fullscreen
+(toggle-frame-maximized)
+(toggle-frame-fullscreen)
+
+;; -- Scroll & menu bars
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(show-paren-mode 1)
+
+;; -- Highlight Current Line
+(global-hl-line-mode 1)
+
+;; -- Trailing Whitespace
+(setq-default show-trailing-whitespace t)
+
+;; -- Always open two windows
+(when(< (count-windows) 2)
+  (split-window-horizontally))
+
+;; -- Theme
+;;(use-package all-the-icons)
+(use-package doom-themes
+  :config
+  (doom-themes-visual-bell-config)
+  (setq doom-themes-enable-bold t)
+  (setq doom-themes-enable-italic t)
+  (load-theme `doom-nord t)
+  (set-face-foreground `font-lock-comment-face "#ffAF00")
+  (set-face-foreground `font-lock-string-face  "#39FF14")
+  (set-face-foreground `font-lock-number-face  "#e87650"))
+
+;; -- Modeline
+(display-time-mode 1)
+(use-package doom-modeline
+	     :init
+	     (doom-modeline-mode 1)
+	     :config
+             (setq doom-modeline-buffer-encoding nil)
+	     (setq doom-modeline-time t))
+
+;; -- Font and Colors
+(set-face-attribute `default nil
+		    :family "Berkeley Mono"
+		    :height 100
+		    :weight `normal
+		    :width `normal)
+
+;; -- Ligatures
+(use-package ligature
+  :config
+  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                       "\\\\" "://"))
+  (global-ligature-mode t))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Editing
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
+;; -- Which Key
+(use-package which-key
+  :config
+  (which-key-mode))
+
+;; -- Jump to definition
+(use-package dumb-jump
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Reasonable Defaults
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(setq inhibit-startup-screen t)
+(setq create-lockfiles nil)
+(setq make-backup-files nil)
+(prefer-coding-system `utf-8)
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Un-Reasonable Defaults
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(add-hook `emacs-startup-hook
+          (lambda ()
+            (cd "/mnt/w/Nighthawk")
+            (treemacs-add-and-display-current-project-exclusively)))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Key-bindings
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(bind-keys*
+  ("C-c c" . visit-emacs-config)
+  ("C-c o" . treemacs))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Commands
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(defun visit-emacs-config ()
+  "Open the config file"
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Jai setup
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(define-derived-mode jai-mode prog-mode "Jai"
+  "Simple major mode for the Jai programming language."
+  (font-lock-add-keywords nil
+    '(
+      ;; Comments
+      ("//.*$" . font-lock-comment-face)
+      ;; Keywords
+      ("\\b\\(if\\|else\\|then\\|for\\|while\\|return\\|struct\\|enum\\|case\\|ifx\\|using\\|cast\\|defer\\|break\\|continue\\|null\\|true\\|false\\)\\b"
+       . font-lock-keyword-face)
+      ;; Compiler Directives
+      ("#[a-zA-Z_]+" . font-lock-preprocessor-face)
+      ;; Types
+      ("\\b\\(int\\|float\\|bool\\|string\\|void\\|u8\\|u16\\|u32\\|u64\\|s8\\|s16\\|s32\\|s64\\|float32\\|float64\\)\\b"
+       . font-lock-type-face)
+      ;; Operators
+      ("[-+*/=<>!&|:;]" . font-lock-keyword-face)
+      ;; Function calls
+      ("[()]" . font-lock-function-name-face)
+      ("\\b\\([a-zA-Z_][a-zA-Z0-9_]*\\)\\s-*(" 1 font-lock-function-name-face)
+      ;; Binary numbers: 0b...
+      ("[([{:[:space:]=.,/*+<>-]\\(0b[01_]+\\)" 1 font-lock-number-face)
+      ;; Hex numbers: 0x...
+      ("[([{:[:space:]=.,/*+<>-]\\(0x[a-fA-F_0-9]+\\)" 1 font-lock-number-face)
+      ;; Decimal numbers
+      ("[([{:[:space:]=.,/*+<>-]\\([0-9]+\\)" 1 font-lock-number-face)
+      ))
+  (setq comment-start "//")
+  (setq comment-end ""))
+
+(add-to-list 'auto-mode-alist '("\\.jai\\'" . jai-mode))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Custom-Set-Variables
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages '(evil)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
