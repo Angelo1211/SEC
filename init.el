@@ -46,7 +46,7 @@
 (use-package projectile
   :config
   (projectile-mode +1)
-  (setq projectile-project-search-path `("mnt/w/Nighthawk")))
+  (setq projectile-project-search-path `("mnt/w/Nighthawk/")))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Directory Traversal
@@ -106,7 +106,7 @@
   (load-theme `doom-nord t)
   (set-face-foreground `font-lock-comment-face "#ffAF00")
   (set-face-foreground `font-lock-string-face  "#39FF14")
-  (set-face-foreground `font-lock-number-face  "#e87650"))
+  (set-face-foreground `font-lock-constant-face  "#e87650"))
 
 ;; -- Modeline
 (display-time-mode 1)
@@ -114,7 +114,7 @@
 	     :init
 	     (doom-modeline-mode 1)
 	     :config
-             (setq doom-modeline-buffer-encoding nil)
+         (setq doom-modeline-buffer-encoding nil)
 	     (setq doom-modeline-time t))
 
 ;; -- Font and Colors
@@ -169,10 +169,7 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Un-Reasonable Defaults
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-(add-hook `emacs-startup-hook
-          (lambda ()
-            (cd "/mnt/w/Nighthawk")
-            (treemacs-add-and-display-current-project-exclusively)))
+(setq default-directory "/mnt/w/Nighthawk/")
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Key-bindings
@@ -192,36 +189,8 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Jai setup
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-(define-derived-mode jai-mode prog-mode "Jai"
-  "Simple major mode for the Jai programming language."
-  (font-lock-add-keywords nil
-    '(
-      ;; Comments
-      ("//.*$" . font-lock-comment-face)
-      ;; Keywords
-      ("\\b\\(if\\|else\\|then\\|for\\|while\\|return\\|struct\\|enum\\|case\\|ifx\\|using\\|cast\\|defer\\|break\\|continue\\|null\\|true\\|false\\)\\b"
-       . font-lock-keyword-face)
-      ;; Compiler Directives
-      ("#[a-zA-Z_]+" . font-lock-preprocessor-face)
-      ;; Types
-      ("\\b\\(int\\|float\\|bool\\|string\\|void\\|u8\\|u16\\|u32\\|u64\\|s8\\|s16\\|s32\\|s64\\|float32\\|float64\\)\\b"
-       . font-lock-type-face)
-      ;; Operators
-      ("[-+*/=<>!&|:;]" . font-lock-keyword-face)
-      ;; Function calls
-      ("[()]" . font-lock-function-name-face)
-      ("\\b\\([a-zA-Z_][a-zA-Z0-9_]*\\)\\s-*(" 1 font-lock-function-name-face)
-      ;; Binary numbers: 0b...
-      ("[([{:[:space:]=.,/*+<>-]\\(0b[01_]+\\)" 1 font-lock-number-face)
-      ;; Hex numbers: 0x...
-      ("[([{:[:space:]=.,/*+<>-]\\(0x[a-fA-F_0-9]+\\)" 1 font-lock-number-face)
-      ;; Decimal numbers
-      ("[([{:[:space:]=.,/*+<>-]\\([0-9]+\\)" 1 font-lock-number-face)
-      ))
-  (setq comment-start "//")
-  (setq comment-end ""))
-
-(add-to-list 'auto-mode-alist '("\\.jai\\'" . jai-mode))
+(add-to-list `load-path (expand-file-name "lisp" user-emacs-directory))
+(require `jai-mode)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Custom-Set-Variables
