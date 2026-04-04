@@ -3,9 +3,7 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; + Here strings syntax highlighting
 ;; + List file procedures
-;; + HLSL mode
 ;; + Align
-;; + Modeline Sucks
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Packages
@@ -107,7 +105,6 @@
   (split-window-horizontally))
 
 ;; -- Theme
-;;(use-package all-the-icons)
 (use-package doom-themes
   :config
   (doom-themes-visual-bell-config)
@@ -125,6 +122,8 @@
 	     :init
 	     (doom-modeline-mode 1)
 	     :config
+         (setq doom-modeline-height 10)
+         (setq doom-modeline-icon nil)
          (setq doom-modeline-buffer-encoding nil)
 	     (setq doom-modeline-time t))
 
@@ -199,10 +198,11 @@
   (find-file "~/.emacs.d/init.el"))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-;; Jai setup
+;; Languages 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (add-to-list `load-path (expand-file-name "lisp" user-emacs-directory))
 (require `jai-mode)
+(require `hlsl-mode)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Custom-Set-Variables
