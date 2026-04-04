@@ -3,7 +3,7 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; + Here strings syntax highlighting
 ;; + List file procedures
-;; + Align
+;; + Ctrl-Backspace deletes too much
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Packages
@@ -21,17 +21,13 @@
 (setq use-package-always-ensure t)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-;; Source Control
-;; ---------------------------------------------------------------------------------------------------------------------------------------
-(use-package magit)
-
-;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Auto-Complete & Search
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (use-package vertico
   :init
   (vertico-mode))
 
+;; -- In-buffer completion
 (use-package corfu
   :init
   (global-corfu-mode)
@@ -54,7 +50,10 @@
   :config
   (projectile-mode +1)
   (setq projectile-enable-caching 'persistent)
-  (setq projectile-project-search-path `("mnt/w/Nighthawk/")))
+  (setq projectile-project-search-path `("mnt/w")))
+
+;; --  Source Control
+;;(use-package magit)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Directory Traversal
@@ -74,8 +73,11 @@
 	     :config
          (define-key evil-normal-state-map (kbd "<SPC> m") `magit-status)
          (define-key evil-normal-state-map (kbd "SPC w") 'ace-window)
+         (define-key evil-normal-state-map (kbd "SPC p") 'projectile-switch-project)
          (define-key evil-normal-state-map (kbd "SPC SPC") 'projectile-find-file)
          (define-key evil-normal-state-map (kbd "SPC /") 'consult-ripgrep)
+         (define-key evil-normal-state-map (kbd "M-h") 'evil-jump-backward)
+         (define-key evil-normal-state-map (kbd "M-l") 'evil-jump-forward)
 	     (evil-mode 1))
 
 (use-package treemacs-evil
@@ -110,11 +112,11 @@
   (doom-themes-visual-bell-config)
   (setq doom-themes-enable-bold t)
   (setq doom-themes-enable-italic t)
-  (load-theme `doom-nord t)
+  (load-theme 'doom-nord t)
   (set-face-background 'hl-line "#005555")
-  (set-face-foreground `font-lock-comment-face "#ffAF00")
-  (set-face-foreground `font-lock-string-face  "#39FF14")
-  (set-face-foreground `font-lock-constant-face  "#e87650"))
+  (set-face-foreground 'font-lock-comment-face "#ffAF00")
+  (set-face-foreground 'font-lock-string-face  "#39FF14")
+  (set-face-foreground 'font-lock-constant-face  "#e87650"))
 
 ;; -- Modeline
 (display-time-mode 1)
@@ -169,12 +171,19 @@
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
+;; -- Abbreviations
+(defun insert-file-header ()
+  (insert (format "// Created(AO): %s" (format-time-string "%Y-%m-%d (%H:%M:%S)"))))
+(define-abbrev global-abbrev-table "fh" "" 'insert-file-header)
+(setq-default abbrev-mode t)
+
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Reasonable Defaults
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (setq inhibit-startup-screen t)
 (setq create-lockfiles nil)
 (setq make-backup-files nil)
+(setq backup-directory-alist '(("." . "~/EmacsBackups")))
 (prefer-coding-system `utf-8)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
@@ -187,6 +196,7 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (bind-keys*
   ("C-c c" . visit-emacs-config)
+  ("C-c a" . align-everything)
   ("C-c o" . treemacs))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
@@ -197,12 +207,17 @@
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
+(defun align-everything (BEG END)
+  "Align based on the rule I had in vscode."
+  (interactive "r")
+  (align-regexp BEG END "\\(\\s-*\\)[:=]"))
+
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-;; Languages 
+;; Languages
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-(add-to-list `load-path (expand-file-name "lisp" user-emacs-directory))
-(require `jai-mode)
-(require `hlsl-mode)
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(require 'jai-mode)
+(require 'hlsl-mode)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Custom-Set-Variables
