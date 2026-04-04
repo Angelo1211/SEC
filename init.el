@@ -1,4 +1,13 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; TODOS
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; + Here strings syntax highlighting
+;; + List file procedures
+;; + HLSL mode
+;; + Align
+;; + Modeline Sucks
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Packages
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (require `package)
@@ -46,6 +55,7 @@
 (use-package projectile
   :config
   (projectile-mode +1)
+  (setq projectile-enable-caching 'persistent)
   (setq projectile-project-search-path `("mnt/w/Nighthawk/")))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
@@ -104,6 +114,7 @@
   (setq doom-themes-enable-bold t)
   (setq doom-themes-enable-italic t)
   (load-theme `doom-nord t)
+  (set-face-background 'hl-line "#005555")
   (set-face-foreground `font-lock-comment-face "#ffAF00")
   (set-face-foreground `font-lock-string-face  "#39FF14")
   (set-face-foreground `font-lock-constant-face  "#e87650"))
@@ -120,7 +131,7 @@
 ;; -- Font and Colors
 (set-face-attribute `default nil
 		    :family "Berkeley Mono"
-		    :height 100
+		    :height 105
 		    :weight `normal
 		    :width `normal)
 
@@ -147,6 +158,7 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
+(setq indent-line-function 'insert-tab)
 
 ;; -- Which Key
 (use-package which-key

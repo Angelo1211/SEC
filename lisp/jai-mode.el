@@ -15,10 +15,6 @@
   :group 'languages
   :prefix "jai-")
 
-(defface jai-literal-face
-  '((t :foreground "red"))
-  "Face for Jai literal values.")
-
 (defconst jai-keywords
   '("if" "ifx" "else" "then" "while" "for" "switch" "case"
     "return" "continue" "break" "defer"
@@ -30,6 +26,7 @@
 (defconst jai-typenames
   '("int" "u64" "u32" "u16" "u8"
     "s64" "s32" "s16" "s8"
+    "it" "it_index"
     "float" "float32" "float64"
     "string" "bool" "void"))
 
@@ -52,6 +49,9 @@
     ;; Keywords
     (,(regexp-opt jai-keywords 'words) 0 font-lock-keyword-face keep)
 
+    ;; Custom types
+    (":\\s-*\\(\\[.*\\]\\)?\\**\\w*" 0 font-lock-type-face)
+
     ;; Built-in types
     (,(regexp-opt jai-typenames 'words) 0 font-lock-type-face keep)
 
@@ -63,7 +63,7 @@
 
     ;; Operators (multi-char first, then single)
     (,(regexp-opt '("::" "->" "==" "!=" "<=" ">=" "&&" "||"
-                    ":" ";" "+" "-" "*" "/" "%" "&" "|" "^" "!" "=" "<" ">"))
+                    ":" ";" "+" "-" "*" "/" "%" "&" "|" "^" "!" "=" "<" ">" "~" "`"))
      . font-lock-keyword-face)
 
     ;; Brackets, parens, square brackets
