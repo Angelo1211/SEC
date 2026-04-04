@@ -1,8 +1,8 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; TODOS
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-;; + Here strings syntax highlighting
 ;; + List file procedures
+;; + Here strings syntax highlighting
 ;; + Ctrl-Backspace deletes too much
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
@@ -35,6 +35,11 @@
   (setq corfu-auto t))
 
 (use-package consult)
+
+;; -- Supercharge completiong like in everything
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic)))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Window Management
@@ -71,11 +76,13 @@
 (use-package evil
 	     :init
 	     :config
-         (define-key evil-normal-state-map (kbd "<SPC> m") `magit-status)
+         (define-key evil-normal-state-map (kbd "SPC a") 'align-everything)
+         (define-key evil-normal-state-map (kbd "SPC b") 'consult-buffer)
+         (define-key evil-normal-state-map (kbd "SPC f") 'consult-ripgrep)
+         (define-key evil-normal-state-map (kbd "SPC /") 'consult-line)
          (define-key evil-normal-state-map (kbd "SPC w") 'ace-window)
          (define-key evil-normal-state-map (kbd "SPC p") 'projectile-switch-project)
          (define-key evil-normal-state-map (kbd "SPC SPC") 'projectile-find-file)
-         (define-key evil-normal-state-map (kbd "SPC /") 'consult-ripgrep)
          (define-key evil-normal-state-map (kbd "M-h") 'evil-jump-backward)
          (define-key evil-normal-state-map (kbd "M-l") 'evil-jump-forward)
 	     (evil-mode 1))
@@ -126,6 +133,7 @@
 	     :config
          (setq doom-modeline-height 10)
          (setq doom-modeline-icon nil)
+         (setq doom-modeline-enable-word-count nil)
          (setq doom-modeline-buffer-encoding nil)
 	     (setq doom-modeline-time t))
 
@@ -181,9 +189,11 @@
 ;; Reasonable Defaults
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (setq inhibit-startup-screen t)
+(setq auto-window-vscroll nil)
 (setq create-lockfiles nil)
 (setq make-backup-files nil)
 (setq backup-directory-alist '(("." . "~/EmacsBackups")))
+(setf kill-buffer-delete-auto-save-files t)
 (prefer-coding-system `utf-8)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
@@ -196,7 +206,7 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (bind-keys*
   ("C-c c" . visit-emacs-config)
-  ("C-c a" . align-everything)
+  ("C-x C-b" . ibuffer)
   ("C-c o" . treemacs))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
@@ -227,7 +237,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(evil)))
+ '(package-selected-packages '(orderless evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
