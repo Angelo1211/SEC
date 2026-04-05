@@ -1,9 +1,8 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; TODOS
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-;; + List file procedures
-;; + Here strings syntax highlighting
-;; + Ctrl-Backspace deletes too much
+;; + Comments on text files
+;; + JAI :: Here strings syntax highlighting
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Packages
@@ -76,7 +75,11 @@
 (use-package evil
 	     :init
 	     :config
-         (define-key evil-normal-state-map (kbd "SPC a") 'align-everything)
+
+         ;; Visual mode
+         (define-key evil-visual-state-map (kbd "SPC a") 'ao/align-everything)
+
+         ;; Normal mode
          (define-key evil-normal-state-map (kbd "SPC b") 'consult-buffer)
          (define-key evil-normal-state-map (kbd "SPC f") 'consult-ripgrep)
          (define-key evil-normal-state-map (kbd "SPC /") 'consult-line)
@@ -85,6 +88,7 @@
          (define-key evil-normal-state-map (kbd "SPC SPC") 'projectile-find-file)
          (define-key evil-normal-state-map (kbd "M-h") 'evil-jump-backward)
          (define-key evil-normal-state-map (kbd "M-l") 'evil-jump-forward)
+
 	     (evil-mode 1))
 
 (use-package treemacs-evil
@@ -190,11 +194,16 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (setq inhibit-startup-screen t)
 (setq auto-window-vscroll nil)
+(prefer-coding-system `utf-8)
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Backups & Auto-Saves
+;; ---------------------------------------------------------------------------------------------------------------------------------------
 (setq create-lockfiles nil)
 (setq make-backup-files nil)
+(setq auto-save-default nil)
 (setq backup-directory-alist '(("." . "~/EmacsBackups")))
 (setf kill-buffer-delete-auto-save-files t)
-(prefer-coding-system `utf-8)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Un-Reasonable Defaults
@@ -205,22 +214,35 @@
 ;; Key-bindings
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (bind-keys*
-  ("C-c c" . visit-emacs-config)
+  ("C-<backspace>" . ao/backward-kill-word)
+  ("C-c c" . ao/visit-emacs-config)
   ("C-x C-b" . ibuffer)
   ("C-c o" . treemacs))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Commands
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-(defun visit-emacs-config ()
+(defun ao/visit-emacs-config ()
   "Open the config file"
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
-(defun align-everything (BEG END)
+(defun ao/align-everything (BEG END)
   "Align based on the rule I had in vscode."
   (interactive "r")
   (align-regexp BEG END "\\(\\s-*\\)[:=]"))
+
+(defun ao/backward-kill-word ()
+  "Remove all whitespace if the character behind the cursor is whitespace, otherwise remove a word."
+  (interactive)
+  (if (looking-back "[ \n]")
+      ;; delete horizontal space before us and then check to see if we
+      ;; are looking at a newline
+      (progn (delete-horizontal-space 't)
+             (while (looking-back "[ \n]")
+               (backward-delete-char 1)))
+    ;; otherwise, just do the normal kill word.
+    (backward-kill-word 1)))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Languages
