@@ -2,6 +2,7 @@
 ;; TODOS
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; + Comments on text files
+;; + Auto-save is still doing whatever it wants
 ;; + JAI :: Here strings syntax highlighting
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
@@ -57,6 +58,7 @@
   (setq projectile-project-search-path `("mnt/w")))
 
 ;; --  Source Control
+;; NOTE(AO) Unfortunately, interactions with WSL2 make this unusable, alas
 ;;(use-package magit)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
@@ -76,16 +78,20 @@
 	     :init
 	     :config
 
+         ;; Redo support
+         (evil-set-undo-system 'undo-redo)
+
          ;; Visual mode
          (define-key evil-visual-state-map (kbd "SPC a") 'ao/align-everything)
 
          ;; Normal mode
          (define-key evil-normal-state-map (kbd "SPC b") 'consult-buffer)
-         (define-key evil-normal-state-map (kbd "SPC f") 'consult-ripgrep)
-         (define-key evil-normal-state-map (kbd "SPC /") 'consult-line)
+         (define-key evil-normal-state-map (kbd "SPC f") 'ao/consult-at-point)
+         (define-key evil-normal-state-map (kbd "SPC /") 'consult-ripgrep)
+         (define-key evil-normal-state-map (kbd "SPC SPC") 'consult-line)
          (define-key evil-normal-state-map (kbd "SPC w") 'ace-window)
          (define-key evil-normal-state-map (kbd "SPC p") 'projectile-switch-project)
-         (define-key evil-normal-state-map (kbd "SPC SPC") 'projectile-find-file)
+         (define-key evil-normal-state-map (kbd "SPC o") 'projectile-find-file)
          (define-key evil-normal-state-map (kbd "M-h") 'evil-jump-backward)
          (define-key evil-normal-state-map (kbd "M-l") 'evil-jump-forward)
 
@@ -144,7 +150,7 @@
 ;; -- Font and Colors
 (set-face-attribute `default nil
 		    :family "Berkeley Mono"
-		    :height 105
+		    :height 103
 		    :weight `normal
 		    :width `normal)
 
@@ -172,6 +178,13 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq indent-line-function 'insert-tab)
+
+;; -- auto close bracket insertion
+(electric-pair-mode 1)
+(setq electric-pair-pairs
+      '((?\" . ?\")
+        (?\{ . ?\})
+        (?\[ . ?\])))
 
 ;; -- Which Key
 (use-package which-key
@@ -231,6 +244,13 @@
   "Align based on the rule I had in vscode."
   (interactive "r")
   (align-regexp BEG END "\\(\\s-*\\)[:=]"))
+
+(defun ao/get-project-root ()
+    (when (fboundp `projectile-project-root) (projectile-project-root)))
+
+(defun ao/consult-at-point ()
+    (interactive)
+    (consult-ripgrep (ao/get-project-root)(thing-at-point 'symbol)))
 
 (defun ao/backward-kill-word ()
   "Remove all whitespace if the character behind the cursor is whitespace, otherwise remove a word."
