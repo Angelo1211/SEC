@@ -7,8 +7,11 @@
 
 ;;; Commentary:
 ;; A major mode for the Jai programming language.
+;; A lot of it taken from Kristoffer Gronlund's jai mode
 
 ;;; Code:
+
+(require 'js)
 
 (defgroup jai nil
   "Support for the Jai programming language."
@@ -98,12 +101,33 @@
     table)
   "Syntax table for `jai-mode'.")
 
+;; imenu hookup
+(add-hook 'jai-mode-hook
+          (lambda ()
+            (setq imenu-generic-expression
+                  '(("type" "^\\(.*:*.*\\) : " 1)
+                    ("function" "^\\(.*\\) :: " 1)
+                    ("struct" "^\\(.*\\) *:: *\\(struct\\)\\(.*\\){" 1)))))
+
+;; NOTE: taken from the scala-indent package and modified for Jai.
+;;   Still uses the js-indent-line as a base, which will have to be
+;;   replaced when the language is more mature.
+(defun jai--indent-on-parentheses ()
+  (when (and (= (char-syntax (char-before)) ?\))
+             (= (save-excursion (back-to-indentation) (point)) (1- (point))))
+    (js-indent-line)))
+
+(defun jai--add-self-insert-hooks ()
+  (add-hook 'post-self-insert-hook
+            'jai--indent-on-parentheses))
+
 ;;;###autoload
 (define-derived-mode jai-mode prog-mode "Jai"
   "Major mode for editing Jai source files."
   :syntax-table jai-mode-syntax-table
   :group 'jai
-  (setq-local font-lock-defaults `(jai-font-lock-keywords)))
+  (setq-local indent-line-function 'js-indent-line)
+  (setq-local font-lock-defaults '(jai-font-lock-keywords)))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.jai\\'" . jai-mode))
