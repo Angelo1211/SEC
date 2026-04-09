@@ -94,6 +94,7 @@
          (define-key evil-normal-state-map (kbd "SPC r t") 'visual-replace-thing-at-point)
          (define-key evil-normal-state-map (kbd "SPC r r") 'visual-replace)
 
+         (define-key evil-normal-state-map (kbd "SPC i") 'consult-imenu-multi)
          (define-key evil-normal-state-map (kbd "SPC b") 'consult-buffer)
          (define-key evil-normal-state-map (kbd "SPC f") 'ao/consult-at-point)
          (define-key evil-normal-state-map (kbd "SPC /") 'consult-ripgrep)

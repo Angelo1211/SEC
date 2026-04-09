@@ -105,8 +105,8 @@
 (add-hook 'jai-mode-hook
           (lambda ()
             (setq imenu-generic-expression
-                  '(("type" "^\\(.*:*.*\\) : " 1)
-                    ("function" "^\\(.*\\) :: " 1)
+                  '(("type" "^\\(.*\\) *:: *\\(struct\\|enum\\)\\(.*\\)" 1)
+                    ("function" "^\\(.*\\) *:: *(" 1)
                     ("struct" "^\\(.*\\) *:: *\\(struct\\)\\(.*\\){" 1)))))
 
 ;; NOTE: taken from the scala-indent package and modified for Jai.
