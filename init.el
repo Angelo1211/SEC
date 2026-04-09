@@ -91,6 +91,9 @@
          (define-key evil-visual-state-map (kbd "SPC a") 'ao/align-everything)
 
          ;; Normal mode
+         (define-key evil-normal-state-map (kbd "SPC r t") 'visual-replace-thing-at-point)
+         (define-key evil-normal-state-map (kbd "SPC r r") 'visual-replace)
+
          (define-key evil-normal-state-map (kbd "SPC b") 'consult-buffer)
          (define-key evil-normal-state-map (kbd "SPC f") 'ao/consult-at-point)
          (define-key evil-normal-state-map (kbd "SPC /") 'consult-ripgrep)
@@ -197,6 +200,13 @@
   :config
   (which-key-mode))
 
+;; -- Search and Replace
+(use-package visual-replace
+    :defer t
+    :config
+    (setq visual-replace-default-to-full-scope t)
+    (visual-replace-global-mode 1))
+
 ;; -- Jump to definition
 (use-package dumb-jump
   :config
@@ -278,7 +288,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(orderless evil)))
+ '(package-selected-packages '(evil orderless visual-replace)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
