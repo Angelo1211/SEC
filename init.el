@@ -33,16 +33,30 @@
   :init
   (vertico-mode))
 
+;; -- Completion at point overloading
+(use-package cape
+  :init
+  ;; always good to have this available
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  :config
+  )
+
 ;; -- In-buffer completion
 (use-package corfu
-  :init
-  (global-corfu-mode)
   :config
-  (setq corfu-auto t))
+  (setq corfu-auto t)
+  (setq corfu-cycle t)
+  (setq corfu-auto-prefix 3)
+  (setq corfu-auto-delay 0.1)
+  (setq corfu-echo-documentation 0.25)
+  (setq corfu-preview-current 'insert)
+  ;;(setq corfu-preselect-first nil)
+  :init
+  (global-corfu-mode))
 
 (use-package consult)
 
-;; -- Supercharge completiong like in everything
+;; -- Supercharge completion like in everything
 (use-package orderless
   :custom
   (completion-styles '(orderless basic)))
@@ -289,7 +303,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(evil orderless visual-replace)))
+ '(package-selected-packages nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
