@@ -3,6 +3,7 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; + Comments on text files
 ;; + Auto-save is still doing whatever it wants
+;; + Open the same buffer in the other window
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Packages
@@ -49,8 +50,6 @@
   (setq corfu-auto-prefix 3)
   (setq corfu-auto-delay 0.1)
   (setq corfu-echo-documentation 0.25)
-  (setq corfu-preview-current 'insert)
-  ;;(setq corfu-preselect-first nil)
   :init
   (global-corfu-mode))
 
@@ -210,6 +209,10 @@
         (?\{ . ?\})
         (?\[ . ?\])))
 
+;; -- Scrolling by a single line
+(setq scroll-step 1)
+(setq scroll-conservatively 10000)
+
 ;; -- Which Key
 (use-package which-key
   :config
@@ -253,6 +256,7 @@
 ;; Key-bindings
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (bind-keys*
+  ("C-<tab>"       . next-buffer)
   ("C-<backspace>" . ao/backward-kill-word)
   ("C-c c"         . ao/visit-emacs-config)
   ("C-x C-b"       . ibuffer)
