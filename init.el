@@ -160,15 +160,11 @@
 
 ;; -- Modeline
 (display-time-mode 1)
-(use-package doom-modeline
-	     :init
-	     (doom-modeline-mode 1)
-	     :config
-         (setq doom-modeline-height 10)
-         (setq doom-modeline-icon nil)
-         (setq doom-modeline-enable-word-count nil)
-         (setq doom-modeline-buffer-encoding nil)
-	     (setq doom-modeline-time t))
+(use-package mood-line
+
+  ;; Enable mood-line
+  :config
+  (mood-line-mode))
 
 ;; -- Font and Colors
 (set-face-attribute `default nil
@@ -277,7 +273,6 @@
 
 (defun ao/get-project-root ()
     (when (fboundp `projectile-project-root) (projectile-project-root)))
-
 (defun ao/consult-at-point ()
     (interactive)
     (consult-ripgrep (ao/get-project-root)(thing-at-point 'symbol)))
@@ -293,6 +288,12 @@
                (backward-delete-char 1)))
     ;; otherwise, just do the normal kill word.
     (backward-kill-word 1)))
+
+;; -- Source: https://www.emacswiki.org/emacs/misc-cmds.el
+(defun ao/revert-buffer-no-confirm ()
+    "Revert buffer without confirmation."
+    (interactive)
+    (revert-buffer :ignore-auto :noconfirm))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Languages
