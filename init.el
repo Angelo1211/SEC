@@ -3,7 +3,6 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; + Comments on text files
 ;; + Auto-save is still doing whatever it wants
-;; + Open the same buffer in the other window
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Packages
@@ -96,6 +95,13 @@
 (use-package evil
 	     :init
 	     :config
+
+        ;; Center search results
+        ;; https://www.reddit.com/r/emacs/comments/6ewd0h/how_can_i_center_the_search_results_vertically/
+        (advice-add 'evil-search-next :after
+                    (lambda (&rest x) (evil-scroll-line-to-center (line-number-at-pos))))
+        (advice-add 'evil-search-previous :after
+                    (lambda (&rest x) (evil-scroll-line-to-center (line-number-at-pos))))
 
          ;; Redo support
          (evil-set-undo-system 'undo-redo)
@@ -252,11 +258,13 @@
 ;; Key-bindings
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (bind-keys*
-  ("C-<tab>"       . next-buffer)
-  ("C-<backspace>" . ao/backward-kill-word)
-  ("C-c c"         . ao/visit-emacs-config)
-  ("C-x C-b"       . ibuffer)
-  ("C-c o"         . treemacs))
+ ("M-o"           . ao/duplicate-buffer-in-other-window )
+ ("C-<tab>"       . next-buffer)
+ ("C-<backspace>" . ao/backward-kill-word)
+ ("C-c c"         . ao/visit-emacs-config)
+ ("C-c e"         . eval-buffer)
+ ("C-x C-b"       . ibuffer)
+ ("C-c o"         . treemacs))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Commands
@@ -288,6 +296,13 @@
                (backward-delete-char 1)))
     ;; otherwise, just do the normal kill word.
     (backward-kill-word 1)))
+
+(defun ao/duplicate-buffer-in-other-window ()
+  (interactive)
+  (delete-other-windows)
+  (split-window-horizontally)
+  ;;(other-window 1)
+  (evil-scroll-line-to-center (line-number-at-pos)))
 
 ;; -- Source: https://www.emacswiki.org/emacs/misc-cmds.el
 (defun ao/revert-buffer-no-confirm ()
