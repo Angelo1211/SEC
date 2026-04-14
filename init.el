@@ -20,13 +20,6 @@
 (setq use-package-always-ensure t)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-;; Work-Life Balance
-;; ---------------------------------------------------------------------------------------------------------------------------------------
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(load "home.el")
-(load "work.el")
-
-;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Auto-Complete & Search
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (use-package vertico
@@ -37,9 +30,7 @@
 (use-package cape
   :init
   ;; always good to have this available
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  :config
-  )
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 ;; -- In-buffer completion
 (use-package corfu
@@ -133,8 +124,11 @@
 ;; Appearance
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; -- Fullscreen
-(toggle-frame-maximized)
-(toggle-frame-fullscreen)
+;; https://emacs.stackexchange.com/questions/51668/if-frame-is-maximized
+(when (not(eq (frame-parameter nil 'fullscreen) 'maximized))
+    (progn
+        (toggle-frame-maximized)
+        (toggle-frame-fullscreen)))
 
 ;; -- Scroll & menu bars
 (menu-bar-mode -1)
@@ -167,10 +161,9 @@
 ;; -- Modeline
 (display-time-mode 1)
 (use-package mood-line
+    :config
+    (mood-line-mode))
 
-  ;; Enable mood-line
-  :config
-  (mood-line-mode))
 
 ;; -- Font and Colors
 (set-face-attribute `default nil
@@ -262,7 +255,6 @@
  ("C-<tab>"       . next-buffer)
  ("C-<backspace>" . ao/backward-kill-word)
  ("C-c c"         . ao/visit-emacs-config)
- ("C-c e"         . eval-buffer)
  ("C-x C-b"       . ibuffer)
  ("C-c o"         . treemacs))
 
@@ -309,6 +301,13 @@
     "Revert buffer without confirmation."
     (interactive)
     (revert-buffer :ignore-auto :noconfirm))
+
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; Work-Life Balance
+;; ---------------------------------------------------------------------------------------------------------------------------------------
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(load "home.el")
+(load "work.el")
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Languages
