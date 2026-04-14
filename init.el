@@ -3,6 +3,7 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; + Comments on text files
 ;; + Auto-save is still doing whatever it wants
+;; + Show whitespace tastefully
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Packages
@@ -139,8 +140,20 @@
 ;; -- Highlight Current Line
 (global-hl-line-mode 1)
 
-;; -- Trailing Whitespace
+;; -- Whitespace
 (setq-default show-trailing-whitespace t)
+
+;; https://github.com/VernonGrant/discovering-emacs/blob/main/show-notes/4-using-whitespace-mode.md
+;; (global-whitespace-mode)
+;; (setq-default whitespace-style '(face spaces ))
+;; (setq-default whitespace-global-modes
+;;               '(not shell-mode
+;;                     help-mode
+;;                     magit-mode
+;;                     magit-diff-mode
+;;                     ibuffer-mode
+;;                     dired-mode
+;;                     occur-mode))
 
 ;; -- Always open two windows
 (when(< (count-windows) 2)
@@ -251,7 +264,7 @@
 ;; Key-bindings
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (bind-keys*
- ("M-o"           . ao/duplicate-buffer-in-other-window )
+ ("M-o"           . ao/open-buffer-in-other-window )
  ("C-<tab>"       . next-buffer)
  ("C-<backspace>" . ao/backward-kill-word)
  ("C-c c"         . ao/visit-emacs-config)
@@ -289,12 +302,21 @@
     ;; otherwise, just do the normal kill word.
     (backward-kill-word 1)))
 
-(defun ao/duplicate-buffer-in-other-window ()
-  (interactive)
-  (delete-other-windows)
-  (split-window-horizontally)
-  ;;(other-window 1)
-  (evil-scroll-line-to-center (line-number-at-pos)))
+(defun ao/open-buffer-in-other-window ()
+  	(interactive)
+
+	;; If there are less than two then split windows
+	(when(< (count-windows) 2)
+		(split-window-horizontally))
+
+	;; Store the current buffer and line
+	(setq buffer (current-buffer))
+	(setq line (line-number-at-pos))
+
+	;; Switch to the other window
+  	(other-window 1)
+	(switch-to-buffer buffer)
+  	(evil-scroll-line-to-top line))
 
 ;; -- Source: https://www.emacswiki.org/emacs/misc-cmds.el
 (defun ao/revert-buffer-no-confirm ()
@@ -322,7 +344,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages
+    '(all-the-icons cape consult corfu doom-modeline doom-themes dumb-jump
+                    evil-lion indent-bars ligature magit mood-line
+                    orderless rainbow-delimiters simple-modeline
+                    tree-sitter-langs treemacs-evil
+                    treemacs-projectile treesit-auto vertico
+                    visual-replace which-key)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
