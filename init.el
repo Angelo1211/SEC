@@ -3,7 +3,6 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; + Comments on text files
 ;; + Auto-save is still doing whatever it wants
-;; + Show whitespace tastefully
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Packages
@@ -141,19 +140,14 @@
 (global-hl-line-mode 1)
 
 ;; -- Whitespace
-(setq-default show-trailing-whitespace t)
-
 ;; https://github.com/VernonGrant/discovering-emacs/blob/main/show-notes/4-using-whitespace-mode.md
-;; (global-whitespace-mode)
-;; (setq-default whitespace-style '(face spaces ))
-;; (setq-default whitespace-global-modes
-;;               '(not shell-mode
-;;                     help-mode
-;;                     magit-mode
-;;                     magit-diff-mode
-;;                     ibuffer-mode
-;;                     dired-mode
-;;                     occur-mode))
+(global-whitespace-mode 1)
+(setq-default show-trailing-whitespace t)
+(setq whitespace-style '(face spaces space-mark tabs tab-mark))
+(setq whitespace-display-mappings
+      '((space-mark ?\  [?\·] [?.])       ; space → middle dot (U+00B7)
+        (tab-mark   ?\t [?\» ?\t] [?\\ ?\t])))
+(custom-set-faces '(whitespace-space ((t (:foreground "#535C6E" :background unspecified)))))
 
 ;; -- Always open two windows
 (when(< (count-windows) 2)
