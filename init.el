@@ -1,14 +1,12 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; TODOS
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-;; + Comments on text files
-;; + Auto-save is still doing whatever it wants
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Packages
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
-(require `package)
-(add-to-list `package-archives `("melpa" . "https://melpa.org/packages/") t)
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 ;; -- Fetch packages
@@ -16,7 +14,7 @@
   (package-refresh-contents))
 
 ;; -- Ensure packages exist by default
-(require `use-package)
+(require 'use-package)
 (setq use-package-always-ensure t)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
@@ -64,7 +62,7 @@
   :config
   (projectile-mode +1)
   (setq projectile-enable-caching 'persistent)
-  (setq projectile-project-search-path `("mnt/w")))
+  (setq projectile-project-search-path '("mnt/w")))
 
 ;; --  Source Control
 ;; NOTE(AO) Unfortunately, interactions with WSL2 make this unusable, alas
@@ -84,8 +82,8 @@
 ;; Vim Emulation
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (use-package evil
-	     :init
-	     :config
+         :init
+         :config
 
         ;; Center search results
         ;; https://www.reddit.com/r/emacs/comments/6ewd0h/how_can_i_center_the_search_results_vertically/
@@ -115,7 +113,7 @@
          (define-key evil-normal-state-map (kbd "M-h") 'evil-jump-backward)
          (define-key evil-normal-state-map (kbd "M-l") 'evil-jump-forward)
 
-	     (evil-mode 1))
+         (evil-mode 1))
 
 (use-package treemacs-evil
   :after (treemacs evil))
@@ -126,9 +124,12 @@
 ;; -- Fullscreen
 ;; https://emacs.stackexchange.com/questions/51668/if-frame-is-maximized
 (when (not(eq (frame-parameter nil 'fullscreen) 'maximized))
-    (progn
-        (toggle-frame-maximized)
-        (toggle-frame-fullscreen)))
+  (toggle-frame-maximized)
+  (toggle-frame-fullscreen))
+
+;; -- Color parenthesis for elisp only because otherwise good luck
+(use-package rainbow-delimiters
+  :hook (emacs-lisp-mode . rainbow-delimiters-mode))
 
 ;; -- Scroll & menu bars
 (menu-bar-mode -1)
@@ -147,7 +148,6 @@
 (setq whitespace-display-mappings
       '((space-mark ?\  [?\·] [?.])       ; space → middle dot (U+00B7)
         (tab-mark   ?\t [?\» ?\t] [?\\ ?\t])))
-(custom-set-faces '(whitespace-space ((t (:foreground "#535C6E" :background unspecified)))))
 
 ;; -- Always open two windows
 (when(< (count-windows) 2)
@@ -161,6 +161,7 @@
   (setq doom-themes-enable-italic t)
   (load-theme 'doom-nord t)
   (set-face-background 'hl-line "#005555")
+  (set-face-foreground 'whitespace-space "#535C6E")
   (set-face-foreground 'font-lock-comment-face "#ffAF00")
   (set-face-foreground 'font-lock-string-face  "#39FF14")
   (set-face-foreground 'font-lock-constant-face  "#e87650"))
@@ -173,11 +174,11 @@
 
 
 ;; -- Font and Colors
-(set-face-attribute `default nil
-		    :family "Berkeley Mono"
-		    :height 103
-		    :weight `normal
-		    :width `normal)
+(set-face-attribute 'default nil
+            :family "Berkeley Mono"
+            :height 103
+            :weight 'normal
+            :width 'normal)
 
 ;; -- Ligatures
 (use-package ligature
@@ -243,7 +244,7 @@
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (setq inhibit-startup-screen t)
 (setq auto-window-vscroll nil)
-(prefer-coding-system `utf-8)
+(prefer-coding-system 'utf-8)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Backups & Auto-Saves
@@ -251,8 +252,6 @@
 (setq create-lockfiles nil)
 (setq make-backup-files nil)
 (setq auto-save-default nil)
-(setq backup-directory-alist '(("." . "~/EmacsBackups")))
-(setf kill-buffer-delete-auto-save-files t)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Key-bindings
@@ -279,7 +278,7 @@
   (align-regexp BEG END "\\(\\s-*\\)[:=]"))
 
 (defun ao/get-project-root ()
-    (when (fboundp `projectile-project-root) (projectile-project-root)))
+    (when (fboundp 'projectile-project-root) (projectile-project-root)))
 (defun ao/consult-at-point ()
     (interactive)
     (consult-ripgrep (ao/get-project-root)(thing-at-point 'symbol)))
@@ -297,21 +296,26 @@
     (backward-kill-word 1)))
 
 (defun ao/open-buffer-in-other-window ()
-  	(interactive)
+    (interactive)
 
-	;; If there are less than two then split windows
-	(when(< (count-windows) 2)
-		(split-window-horizontally))
+    ;; If there are less than two then split windows
+    (when(< (count-windows) 2)
+        (split-window-horizontally))
 
-	;; Store the current buffer and line
-	(setq buffer (current-buffer))
-	(setq line (line-number-at-pos))
+    ;; Store the current buffer and line
+    (let ((buffer (current-buffer))
+          (line   (line-number-at-pos)))
+      (other-window 1) ;; Switch to the other window
+      (switch-to-buffer buffer)
+      (evil-scroll-line-to-top line)))
 
-	;; Switch to the other window
-  	(other-window 1)
-	(switch-to-buffer buffer)
-  	(evil-scroll-line-to-top line))
+;; Cleanup all errant tabs in a file
+;; https://gist.github.com/michaelklishin/318171/92a8f3aed74b0b2074f9f34dc99e1f65d9b4ccd3
+(defun ao/untabify-buffer ()
+  (interactive)
+  (untabify (point-min) (point-max)))
 
+;; NOTE(AO) not currently in use 
 ;; -- Source: https://www.emacswiki.org/emacs/misc-cmds.el
 (defun ao/revert-buffer-no-confirm ()
     "Revert buffer without confirmation."
