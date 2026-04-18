@@ -106,7 +106,7 @@
           (lambda ()
             (setq imenu-generic-expression
                   '(("type" "^\\(.*\\) *:: *\\(struct\\|enum\\)\\(.*\\)" 1)
-                    ("function" "^\\(.*\\) *:: *(" 1)
+                    ("function" "^\\(.*\\)\\s-*::\\s-*\\(?:inline\\|no_inline\\)?\\s-*(" 1)
                     ("struct" "^\\(.*\\) *:: *\\(struct\\)\\(.*\\){" 1)))))
 
 ;; NOTE: taken from the scala-indent package and modified for Jai.
