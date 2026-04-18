@@ -102,6 +102,8 @@
          (define-key evil-normal-state-map (kbd "SPC r t") 'visual-replace-thing-at-point)
          (define-key evil-normal-state-map (kbd "SPC r r") 'visual-replace)
 
+         (define-key evil-normal-state-map (kbd "g p") 'ao/evil-select-pasted)
+
          (define-key evil-normal-state-map (kbd "SPC i") 'consult-imenu-multi)
          (define-key evil-normal-state-map (kbd "SPC b") 'consult-buffer)
          (define-key evil-normal-state-map (kbd "SPC f") 'ao/consult-at-point)
@@ -321,6 +323,14 @@
     "Revert buffer without confirmation."
     (interactive)
     (revert-buffer :ignore-auto :noconfirm))
+
+;; Select just pasted block
+;; https://emacs.stackexchange.com/questions/19330/evil-emacs-how-to-select-last-pasted-text-like-gv
+(defun ao/evil-select-pasted ()
+  (interactive)
+  (let ((start-marker (evil-get-marker ?\[))
+        (end-marker (evil-get-marker ?\])))
+        (evil-visual-select start-marker end-marker)))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Work-Life Balance
