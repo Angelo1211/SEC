@@ -142,6 +142,9 @@
 ;; -- Highlight Current Line
 (global-hl-line-mode 1)
 
+;; -- Truncate lines when they are too long for the window
+(setq truncate-lines nil)
+
 ;; -- Whitespace
 ;; https://github.com/VernonGrant/discovering-emacs/blob/main/show-notes/4-using-whitespace-mode.md
 (global-whitespace-mode 1)
