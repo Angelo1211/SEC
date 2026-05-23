@@ -105,6 +105,7 @@
          (define-key evil-normal-state-map (kbd "g p") 'ao/evil-select-pasted)
 
          (define-key evil-normal-state-map (kbd "SPC i") 'consult-imenu-multi)
+         (define-key evil-normal-state-map (kbd "SPC m") 'consult-imenu)
          (define-key evil-normal-state-map (kbd "SPC b") 'consult-buffer)
          (define-key evil-normal-state-map (kbd "SPC f") 'ao/consult-at-point)
          (define-key evil-normal-state-map (kbd "SPC /") 'consult-ripgrep)
@@ -143,7 +144,7 @@
 (global-hl-line-mode 1)
 
 ;; -- Truncate lines when they are too long for the window
-(setq truncate-lines nil)
+(setq truncate-lines 1)
 
 ;; -- Whitespace
 ;; https://github.com/VernonGrant/discovering-emacs/blob/main/show-notes/4-using-whitespace-mode.md
@@ -181,7 +182,7 @@
 ;; -- Font and Colors
 (set-face-attribute 'default nil
             :family "Berkeley Mono"
-            :height 103
+            :height 107
             :weight 'normal
             :width 'normal)
 
