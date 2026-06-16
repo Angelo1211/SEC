@@ -126,6 +126,7 @@
   "Major mode for editing Jai source files."
   :syntax-table jai-mode-syntax-table
   :group 'jai
+  (setq-local comment-start "//")
   (setq-local indent-line-function 'js-indent-line)
   (setq-local font-lock-defaults '(jai-font-lock-keywords)))
 

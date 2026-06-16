@@ -104,8 +104,9 @@
 
          (define-key evil-normal-state-map (kbd "g p") 'ao/evil-select-pasted)
 
-         (define-key evil-normal-state-map (kbd "SPC i") 'consult-imenu-multi)
-         (define-key evil-normal-state-map (kbd "SPC m") 'consult-imenu)
+         (define-key evil-normal-state-map (kbd "C-o") 'ace-window)
+         (define-key evil-normal-state-map (kbd "SPC i") 'consult-imenu)
+         (define-key evil-normal-state-map (kbd "SPC m") 'consult-imenu-multi)
          (define-key evil-normal-state-map (kbd "SPC b") 'consult-buffer)
          (define-key evil-normal-state-map (kbd "SPC f") 'ao/consult-at-point)
          (define-key evil-normal-state-map (kbd "SPC /") 'consult-ripgrep)
@@ -144,7 +145,7 @@
 (global-hl-line-mode 1)
 
 ;; -- Truncate lines when they are too long for the window
-(setq truncate-lines 1)
+(setq-default truncate-lines t)
 
 ;; -- Whitespace
 ;; https://github.com/VernonGrant/discovering-emacs/blob/main/show-notes/4-using-whitespace-mode.md
@@ -265,6 +266,7 @@
 (bind-keys*
  ("M-o"           . ao/open-buffer-in-other-window )
  ("C-<tab>"       . next-buffer)
+ ("C-/"           . comment-dwim)
  ("C-<backspace>" . ao/backward-kill-word)
  ("C-c c"         . ao/visit-emacs-config)
  ("C-x C-b"       . ibuffer)
