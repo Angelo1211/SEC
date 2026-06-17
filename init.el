@@ -359,6 +359,10 @@
     (ao/highlight-remove-all)
     (ao/search-highlight-persist))
 
+(defadvice evil-search (after evil-search-hl-persist activate)
+    (ao/highlight-remove-all)
+    (ao/search-highlight-persist))
+
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Work-Life Balance
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
