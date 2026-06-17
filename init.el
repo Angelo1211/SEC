@@ -17,7 +17,7 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-;; ---------------------------------------------------------------------------------------------------------------------------------------
+;; -------------------------------------------------------------------------------------------------------------------------------------
 ;; Auto-Complete & Search
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 (use-package vertico
@@ -116,6 +116,7 @@
          (define-key evil-normal-state-map (kbd "SPC o") 'projectile-find-file)
          (define-key evil-normal-state-map (kbd "M-h") 'evil-jump-backward)
          (define-key evil-normal-state-map (kbd "M-l") 'evil-jump-forward)
+         (define-key evil-normal-state-map (kbd "SPC <RET>") 'ao/highlight-remove-all)
 
          (evil-mode 1))
 
@@ -337,6 +338,26 @@
   (let ((start-marker (evil-get-marker ?\[))
         (end-marker (evil-get-marker ?\])))
         (evil-visual-select start-marker end-marker)))
+
+;;Persistent search highlighting
+;;https://stackoverflow.com/questions/25768036/emacs-evil-non-incremental-search-and-persistent-highlighting 
+(defun ao/highlight-remove-all ()
+    (interactive)
+    (hi-lock-mode -1)
+    (hi-lock-mode 1))
+
+(defun ao/search-highlight-persist ()
+    (highlight-regexp (car-safe (if isearch-regexp
+                                    regexp-search-ring
+                                    search-ring)) 'highlight))
+
+(defadvice isearch-exit (after isearch-hl-persist activate)
+    (ao/highlight-remove-all)
+    (ao/search-highlight-persist))
+
+(defadvice evil-search-incrementally (after evil-search-hl-persist activate)
+    (ao/highlight-remove-all)
+    (ao/search-highlight-persist))
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
 ;; Work-Life Balance
