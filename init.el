@@ -242,9 +242,13 @@
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
 ;; -- Abbreviations
-(defun insert-file-header ()
+(defun ao/insert-file-header ()
   (insert (format "// Created(AO): %s" (format-time-string "%Y-%m-%d (%H:%M:%S)"))))
-(define-abbrev global-abbrev-table "fh" "" 'insert-file-header)
+(define-abbrev global-abbrev-table "fh" "" 'ao/insert-file-header)
+
+(defun ao/insert-todo ()
+  (insert (format "// TODO(AO)" )))
+(define-abbrev global-abbrev-table "ttt" "" 'ao/insert-todo)
 (setq-default abbrev-mode t)
 
 ;; ---------------------------------------------------------------------------------------------------------------------------------------
@@ -350,6 +354,13 @@
     (highlight-regexp (car-safe (if isearch-regexp
                                     regexp-search-ring
                                     search-ring)) 'highlight))
+
+(defun ao/search-highlight-persist ()
+    (let ((term (car-safe (if isearch-regexp
+                              regexp-search-ring
+                              search-ring))))
+        (when (stringp term)
+            (highlight-regexp term 'highlight))))
 
 (defadvice isearch-exit (after isearch-hl-persist activate)
     (ao/highlight-remove-all)

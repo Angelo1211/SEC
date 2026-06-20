@@ -33,33 +33,18 @@
 
 ;; This file requires Emacs-20.3 or higher and package cc-mode.
 
-;; If hlsl-mode is not part of your distribution, put this file into your
-;; load-path and the following into your ~/.emacs:
-;;   (autoload 'hlsl-mode "hlsl-mode" nil t)
-;;   (add-to-list 'auto-mode-alist '("\\.fx\\'" . hlsl-mode))
-''   (add-to-list 'auto-mode-alist '("\\.hlsl\\'" . hlsl-mode))
-;;; Code:
+(require 'js)
 
-(provide 'hlsl-mode)
+(defgroup hlsl nil
+  "Support for the hlsl programming language."
+  :group 'languages
+  :prefix "hlsl-")
 
 (eval-when-compile			; required and optional libraries
   (require 'cc-mode)
   (require 'find-file))
 
-(defconst hlsls-version "1.0"
-  "HLSL major mode version number.")
-
 (defvar hlsl-mode-hook nil)
-
-(defvar hlsl-mode-map
-  (let ((hlsl-mode-map (make-sparse-keymap)))
-    (define-key hlsl-mode-map [S-iso-lefttab] 'ff-find-other-file)
-    hlsl-mode-map)
-  "Keymap for HLSL major mode")
-
-(add-to-list 'auto-mode-alist '("\\.fx\\'" . hlsl-mode))
-(add-to-list 'auto-mode-alist '("\\.hlsl\\'" . hlsl-mode))
-(add-to-list 'auto-mode-alist '("\\.hlsli\\'" . hlsl-mode))
 
 (defconst hlsl-font-lock-keywords-1
   `(
@@ -91,9 +76,17 @@
     hlsl-mode-syntax-table)
   "Syntax table for hlsl-mode")
 
-(define-derived-mode hlsl-mode c-mode "HLSL"
+;;;###autoload
+(define-derived-mode hlsl-mode prog-mode "hlsl"
   "Major mode for editing HLSL shader files."
-  (set (make-local-variable 'font-lock-defaults) '(hlsl-font-lock-keywords))
-  )
+  :syntax-table hlsl-mode-syntax-table
+  :group 'hlsl
+  (setq-local comment-start "//")
+  (setq-local indent-line-function 'js-indent-line)
+  (setq-local font-lock-defaults '(hlsl-font-lock-keywords)))
 
-;;; hlsls-mode.el ends here
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.hlsl\\'" . hlsl-mode))
+(add-to-list 'auto-mode-alist '("\\.hlsli\\'" . hlsl-mode))
+
+(provide 'hlsl-mode)
